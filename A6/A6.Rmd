@@ -1,0 +1,375 @@
+library("ggpubr")
+
+df <- read.csv(file = '/Users/hasnah/Desktop/School/DATA_512/A6/clean_data/clean_r_data.csv')
+
+df2 <- read.csv(file = '/Users/hasnah/Desktop/School/DATA_512/A6/clean_data/clean_r_data_no_outlier.csv')
+
+df <- df %>% drop_na()
+
+df %>% 
+  filter_if(~is.numeric(.), all_vars(!is.infinite(.)))
+
+
+ggscatter(df2, x =  'Mean_parks_lag11', y = 'log_incidence', color = "red", title = 'Correlation between % of change in COVID daily caes and mobility in Parks',
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Parks: % of change from baseline", ylab = "% of increase in COVID Cases")
+          
+          
+ggscatter(df, x = "Mean_retail_lag11",  y = "log_incidence", color = "green", title = 'Correlation between % of change in COVID daily caes and mobility in retail and recreation',
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Retail: % of change from baseline", ylab = "% of increase in COVID Cases")
+          
+          
+ggscatter(df, x = "Mean_work_lag11", y = "log_incidence", color = "blue", title = 'Correlation between % of change in COVID daily caes and mobility in workplaces',
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Workplace: % of change from baseline", ylab = "% of increase in COVID Cases")        
+          
+
+
+ggscatter(df, x = "Mean_grocery_lag11", y = "log_incidence", color = "orange", title = 'Correlation between % of change in COVID daily caes and mobility in groceries and pharmacies',
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Grocery: % of change from baseline", ylab = "% of increase in COVID Cases")
+          
+          
+          
+ggscatter(df, x = "Mean_transit_lag11", y = "log_incidence", color = "purple",title = 'Correlation between % of change in COVID daily caes and mobility in transit stations', 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Transit: % of change from baseline", ylab = "% of increase in COVID Cases")
+           
+
+
+ggscatter(df, x = "Mean_residential_lag11", y = "log_incidence", color = "cyan",title = 'Correlation between % of change in COVID daily caes and mobility in residential areas',  
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Residential: % of change from baseline", ylab = "% of increase in COVID Cases")
+
+
+
+####################################################
+library(adespatial)
+library(gridExtra)
+library(interactions)
+library(jtools)
+library(kableExtra)
+library(lubridate)
+library(metR)
+library(plotly)
+library(RCurl)
+library(sf)
+library(spdep)
+library(tidyverse)
+library(tigris)
+library(usmap)
+library(wppExplorer)
+library(dplyr)
+library(devtools) 
+library(nlcor)
+library(ggplot2)
+
+library(quantile)
+
+data <- read.csv(file = '/Users/hasnah/Desktop/School/DATA_512/A6/clean_data/ff_confirmed_cases_mobility.csv')
+
+
+
+# convert mobility indicators to 1
+colnames(data)
+  
+data <- data%>%
+  mutate(date = lubridate::ymd(date)) %>% 
+  transmute(date,
+          retail = retail_and_recreation_percent_change_from_baseline, 
+          grocery = grocery_and_pharmacy_percent_change_from_baseline, 
+          parks = parks_percent_change_from_baseline,
+          transit = transit_stations_percent_change_from_baseline, 
+          work = workplaces_percent_change_from_baseline,
+          residential = residential_percent_change_from_baseline, 
+          confirmed_cases)  %>%
+  mutate(retail = 1 + retail/100,
+         grocery = 1 + grocery/100,
+         parks = 1 + parks/100,
+         transit = 1 + transit/100,
+         work = 1 + work/100,
+         residential = 1 + residential/100)
+          
+
+
+
+
+
+data <- data %>% 
+        mutate(new_cases = confirmed_cases - lag(confirmed_cases, 1),
+         pct_change = (new_cases - lag(new_cases, 1))/lag(new_cases, 1),
+         pct_increase = (confirmed_cases - lag(confirmed_cases, 1))/lag(confirmed_cases, 1), 
+         population = 957419)
+
+data <- data %>% filter(new_cases >= 0)
+
+
+data <- data %>%
+  mutate(incidence = confirmed_cases/(population/100000),
+         log_incidence = log(incidence))
+
+
+data <- data %>% mutate(log_new_cases = log(new_cases + 0.001))
+
+# data <- data %>% drop_na()
+
+library("ggpubr")
+
+ggscatter(data, x = "pct_increase", y = "Mean_parks_lag11", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "number of new cases", ylab = "rate of change in parks")
+          
+          
+ggscatter(data, x = "pct_increase", y = "retail", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "number of new cases", ylab = "rate of change in retail")
+          
+          
+ggscatter(data, x = "pct_increase", y = "work", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "number of new cases", ylab = "rate of change in work")        
+          
+
+
+ggscatter(data, x = "pct_increase", y = "residential", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "number of new cases", ylab = "rate of change in retail")
+          
+          
+          
+ggscatter(data, x = "pct_increase", y = "work", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "number of new cases", ylab = "rate of change in retail")
+           
+
+
+ggscatter(data, x = "pct_increase", y = "grocery", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "number of new cases", ylab = "rate of change in retail")
+
+
+
+
+
+
+
+fit1 <- lm(log_new_cases ~ retail, data = data)
+summary(fit1)
+plot(log_incidence ~ retail, data = data)
+abline(fit1)
+
+
+fit2 <- lm(log_new_cases ~ grocery, data = data)
+summary(fit2)
+plot(confirmed_cases ~ grocery, data = data)
+abline(fit2)
+
+
+fit3 <- lm(log_new_cases ~ parks, data = data)
+summary(fit3)
+plot(confirmed_cases ~ parks, data = data)
+abline(fit3)
+
+
+
+
+grocery_lag11 <- data %>% 
+  group_modify(~ {((lag(.x$grocery, 12) + 
+                      lag(.x$grocery, 11) + 
+                      lag(.x$grocery, 10) + 
+                      lag(.x$grocery, 9) + 
+                      lag(.x$grocery, 8) + 
+                      lag(.x$grocery, 7) + 
+                      lag(.x$grocery, 6) + 
+                      lag(.x$grocery, 5) + 
+                      lag(.x$grocery, 4) + 
+                      lag(.x$grocery, 3) + 
+                      lag(.x$grocery, 2))/11) %>%
+      enframe()}) %>%
+  transmute(Mean_grocery_lag11 = value)  %>%
+  cbind(data) %>%
+  transmute(date,Mean_grocery_lag11)
+
+
+retail_lag11 <- data %>% 
+  group_modify(~ {((lag(.x$retail, 12) + 
+                      lag(.x$retail, 11) + 
+                      lag(.x$retail, 10) + 
+                      lag(.x$retail, 9) + 
+                      lag(.x$retail, 8) + 
+                      lag(.x$retail, 7) + 
+                      lag(.x$retail, 6) + 
+                      lag(.x$retail, 5) + 
+                      lag(.x$retail, 4) + 
+                      lag(.x$retail, 3) + 
+                      lag(.x$retail, 2))/11) %>%
+      enframe()}) %>%
+  transmute(Mean_retail_lag11 = value)  %>%
+  cbind(data) %>%
+  transmute(date,Mean_retail_lag11)
+  
+  
+data <- data %>% left_join(residential_lag11, by = c("date" = "date"))
+
+data <- data %>% drop_na()
+
+write.csv(data,'/Users/hasnah/Desktop/School/DATA_512/A6/clean_data/clean_r_data_nona.csv', row.names = FALSE)
+
+
+
+parks_lag11 <- data %>% 
+  group_modify(~ {((lag(.x$parks, 12) + 
+                      lag(.x$parks, 11) + 
+                      lag(.x$parks, 10) + 
+                      lag(.x$parks, 9) + 
+                      lag(.x$parks, 8) + 
+                      lag(.x$parks, 7) + 
+                      lag(.x$parks, 6) + 
+                      lag(.x$parks, 5) + 
+                      lag(.x$parks, 4) + 
+                      lag(.x$parks, 3) + 
+                      lag(.x$parks, 2))/11) %>%
+      enframe()}) %>%
+  transmute(Mean_parks_lag11 = value)  %>%
+  cbind(data) %>%
+  transmute(date,Mean_parks_lag11)
+
+
+
+transit_lag11 <- data %>% 
+  group_modify(~ {((lag(.x$transit, 12) + 
+                      lag(.x$transit, 11) + 
+                      lag(.x$transit, 10) + 
+                      lag(.x$transit, 9) + 
+                      lag(.x$transit, 8) + 
+                      lag(.x$transit, 7) + 
+                      lag(.x$transit, 6) + 
+                      lag(.x$transit, 5) + 
+                      lag(.x$transit, 4) + 
+                      lag(.x$transit, 3) + 
+                      lag(.x$transit, 2))/11) %>%
+      enframe()}) %>%
+  transmute(Mean_transit_lag11 = value)  %>%
+  cbind(data) %>%
+  transmute(date,Mean_transit_lag11)
+  
+
+work_lag11 <- data %>% 
+  group_modify(~ {((lag(.x$work, 12) + 
+                      lag(.x$work, 11) + 
+                      lag(.x$work, 10) + 
+                      lag(.x$work, 9) + 
+                      lag(.x$work, 8) + 
+                      lag(.x$work, 7) + 
+                      lag(.x$work, 6) + 
+                      lag(.x$work, 5) + 
+                      lag(.x$work, 4) + 
+                      lag(.x$work, 3) + 
+                      lag(.x$work, 2))/11) %>%
+      enframe()}) %>%
+  transmute(Mean_work_lag11 = value)  %>%
+  cbind(data) %>%
+  transmute(date,Mean_work_lag11)
+  
+residential_lag11 <- data %>% 
+  group_modify(~ {((lag(.x$residential, 12) + 
+                      lag(.x$residential, 11) + 
+                      lag(.x$residential, 10) + 
+                      lag(.x$residential, 9) + 
+                      lag(.x$residential, 8) + 
+                      lag(.x$residential, 7) + 
+                      lag(.x$residential, 6) + 
+                      lag(.x$residential, 5) + 
+                      lag(.x$residential, 4) + 
+                      lag(.x$residential, 3) + 
+                      lag(.x$residential, 2))/11) %>%
+      enframe()}) %>%
+  transmute(Mean_residential_lag11 = value)  %>%
+  cbind(data) %>%
+  transmute(date, Mean_residential_lag11)
+
+
+data <- data %>%
+  left_join(retail_lag11, by = c("date" = "date")) %>%
+  left_join(grocery_lag11, by = c("date" = "date"))  %>%
+  left_join(parks_lag11, by = c("date" = "date")) %>%
+  left_join(transit_lag11, by = c("date" = "date")) %>%
+  left_join(work_lag11, by = c("date" = "date")) %>%
+  left_join(residential_lag11, by = c("date" = "date"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+data <- data %>% drop_na()
+
+data <- data %>% 
+  mutate(retail = Mean_retail_lag11,
+         groceries = Mean_grocery_lag11,
+         parks = Mean_parks_lag11,
+         parks2 = Mean_parks_lag11^2,
+         transit = Mean_transit_lag11,
+         work = Mean_work_lag11,
+         work2 = work^2,
+         residential = Mean_residential_lag11,
+         residential2 = Mean_residential_lag11^2,
+         parksXresidential = parks * residential,
+         parksXwork = parks * work)
+         
+         
+mod1 <- lm(log_new_cases ~ retail, data = data)
+
+
+summ(mod1)         
+plot(log_new_cases ~ retail, data = data)
+abline(mod1)       
+       
+       
+       
+       
+         
+mod2 <- lm(log_incidence ~  0 +
+             retail + 
+             parks2 + 
+             grocery +
+             work2 +
+             transit + 
+             residential, 
+           data = data
+)
+
+
+summ(mod2)         
+         
+library(corrplot)
+        
+         
+         
+         
+         
+
+
+
+
+

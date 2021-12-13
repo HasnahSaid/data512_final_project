@@ -1,0 +1,51 @@
+# import libraries
+library("ggpubr")
+library(ggstatsplot)
+library(ggplot2)
+
+# read in the CSV cleand and prepared in Python
+df<- read.csv(file = './clean_data/ff_merged_unfiltered.csv')
+
+# plot the correlation between vaccination and Confirmed COVID Cases
+ggscatter(df, x =  'Series_Complete_Yes', y = 'confirmed_cases', color = "dark green",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Number of fully vaccinated people in Fairfield County", ylab = "Number of confirmed COVID19 cases", 
+          title = 'Correlation between Vaccination and Confirmed COVID Cases in Fairfield County')
+          
+# plot the correlation between vaccination and hospitalization
+ggscatter(df, x =  'Series_Complete_Yes', y = 'hosp_cases', color = "orange",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Number of fully vaccinated people in Fairfield County", ylab = "Number of hospitalization due to COVID-19", 
+          title = 'Correlation between Vaccination and Hospitalization Due to COVID in Fairfield County')
+          
+# plot the correlation between vaccination and death
+ggscatter(df, x =  'Series_Complete_Yes', y = 'death', color = "red",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Number of fully vaccinated people in Fairfield County", ylab = "Number of deaths due to COVID-19", 
+          title = 'Correlation between Vaccination and Deaths due to COVID in Fairfield County')
+          
+# plot the correlation between covid cases and unemployment rate        
+ggscatter(df, x =  'confirmed_cases', y = 'unemployment_rate', color = "blue",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Number of confirmed COVID19 cases", ylab = "Unemployment Rate", 
+          title = 'Correlation between COVID Cases and Unemployment Rate in Fairfield County')
+          
+# plot the correlation between covid cases and death
+ggscatter(df, x =  'confirmed_cases', y = 'death', color = "purple",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Number of confirmed COVID19 cases", ylab = "death", 
+          title = 'Correlation between COVID Cases and Death in Fairfield County')
+
+# plot the correlation between covid cases and hospitalization
+ggscatter(df, x =  'confirmed_cases', y = 'hosp_cases', color = "purple",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Number of confirmed COVID19 cases", ylab = "Hospitalization", 
+          title = 'Correlation between COVID Cases and Hospitalization in Fairfield County')
+
+
