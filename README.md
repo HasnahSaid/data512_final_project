@@ -26,6 +26,7 @@ The datasets used in this analysis are:
 This data state included a column for counties in the United States, I just used my assigned county data
 
 | Column | Description | Data Type|
+| ---         |     ---      |          ---|
 | Province_State   | Daily Dates    | int   |
 | Connecticut.1   | Number of Confiremed Cases       | int     |
 
@@ -33,6 +34,7 @@ This data state included a column for counties in the United States, I just used
 This data state included a column for counties in the United States, I just used my assigned county data
 
 | Column | Description | Data Type|
+| ---         |     ---      |          ---|
 | Province_State   | Daily Dates    | Number   |
 | Connecticut.1   | Number of Deaths       | Number     |
 
@@ -117,6 +119,17 @@ This data state included a column for counties in the United States, I just used
 
 ### Methodology
 Please refer to the Jupyter notebook and the R files. The process is also documneted in the final project report
+
+## Results
+1. Is there a correlation between getting fully vaccinated and the number of daily confirmed COVID-19 cases? 
+   Yes, there was a correlation between vaccination and COVID-19 cases. The increase in vaccination leads to the decrease of COVID-19 cases and lowers the rate      of infection.
+2. Is there a correlation between vaccination and COVID-19 related hospitalizations?  
+      I found that there was a linear correlation between the two; as the number of people who are fully vaccinated increases, the number of COVID-19 related           hospitalizations decreases.
+3. Is there a correlation between vaccination and COVID-19 related deaths?  
+	Yes, my analysis showed that increasing vaccination decreases COVID-19 deaths
+4. Is there a correlation between COVID-19 cases and the unemployment rate in Fairfield County?  
+   Yes, there is a correlation between unemployment and COVID-19 cases. The unemployment rate spiked significantly at the beginning of the pandemic and              stayed at higher rates than it was in 2018 and 2019
+
 
 ## License
 This repository is licensed under the MIT License and all the data are public domain
